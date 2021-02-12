@@ -4,6 +4,11 @@ services:
   - postgresql
 addons:
   postgresql: "9.4"
+notifications:
+  email:
+    recipients:
+      - javgarcer@alum.us.es
+    on_failure: always
 before_script:
   - psql -U postgres -c "create user decide password 'decide'"
   - psql -U postgres -c "create database test_decide owner decide"
@@ -13,7 +18,8 @@ python:
   - "3.7"
 install:
   - pip install -r requirements.txt
+  - pip install codacy-coverage
 script:
   - cd decide
   - cp travis_local_settings.py local_settings.py
-  - python manage.py test authentication --keepdb
+  - coverage run --branch --source=. python manage.py test mixnet --keepdb
